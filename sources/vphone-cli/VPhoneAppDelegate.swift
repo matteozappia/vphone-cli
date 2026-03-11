@@ -3,7 +3,7 @@ import Foundation
 import Virtualization
 
 class VPhoneAppDelegate: NSObject, NSApplicationDelegate {
-    private let cli: VPhoneCLI
+    private let cli: VPhoneBootCLI
     private var vm: VPhoneVirtualMachine?
     private var control: VPhoneControl?
     private var windowController: VPhoneWindowController?
@@ -14,7 +14,7 @@ class VPhoneAppDelegate: NSObject, NSApplicationDelegate {
     private var locationProvider: VPhoneLocationProvider?
     private var sigintSource: DispatchSourceSignal?
 
-    init(cli: VPhoneCLI) {
+    init(cli: VPhoneBootCLI) {
         self.cli = cli
         super.init()
     }
@@ -36,7 +36,7 @@ class VPhoneAppDelegate: NSObject, NSApplicationDelegate {
                 try await self.startVirtualMachine()
             } catch {
                 print("[vphone] Fatal: \(error)")
-                NSApp.terminate(nil)
+                exit(EXIT_FAILURE)
             }
         }
     }
@@ -139,6 +139,7 @@ class VPhoneAppDelegate: NSObject, NSApplicationDelegate {
                 mc?.updateConnectAvailability(available: true)
                 mc?.updateInstallAvailability(available: true)
                 mc?.updateAppsAvailability(available: caps.contains("apps"))
+                mc?.updateURLAvailability(available: caps.contains("url"))
                 mc?.updateClipboardAvailability(available: caps.contains("clipboard"))
                 mc?.updateSettingsAvailability(available: true)
                 if caps.contains("location") {
@@ -155,6 +156,7 @@ class VPhoneAppDelegate: NSObject, NSApplicationDelegate {
                 mc?.updateConnectAvailability(available: false)
                 mc?.updateInstallAvailability(available: false)
                 mc?.updateAppsAvailability(available: false)
+                mc?.updateURLAvailability(available: false)
                 mc?.updateClipboardAvailability(available: false)
                 mc?.updateSettingsAvailability(available: false)
                 provider?.stopReplay()
